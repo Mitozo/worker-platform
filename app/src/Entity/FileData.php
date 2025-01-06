@@ -11,12 +11,13 @@ use Traits\UpdateFieldTrait;
 class FileData
 {
     use UpdateFieldTrait;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\GeneratedValue(strategy: 'NONE')] // GUID is usually generated externally
     #[ORM\Column(type: Types::GUID)]
     private ?string $uuid = null;
 
