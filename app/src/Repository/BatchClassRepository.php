@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\BatchClass;
+use App\Entity\FileClass;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<BatchClass>
+ * @extends ServiceEntityRepository<FileClass>
  */
-class BatchClassRepository extends ServiceEntityRepository
+class FileClassRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, BatchClass::class);
+        parent::__construct($registry, FileClass::class);
     }
 
 //    /**
-//     * @return BatchClass[] Returns an array of BatchClass objects
+//     * @return FileClass[] Returns an array of FileClass objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -31,7 +31,7 @@ class BatchClassRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?BatchClass
+//    public function findOneBySomeField($value): ?FileClass
 //    {
 //        return $this->createQueryBuilder('b')
 //            ->andWhere('b.exampleField = :val')
