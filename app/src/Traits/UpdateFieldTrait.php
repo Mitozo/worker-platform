@@ -1,25 +1,28 @@
 <?php
 
-namespace Traits;
+namespace App\Traits;
 
 use Doctrine\ORM\Mapping as ORM;
 
 trait UpdateFieldTrait
 {
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
+    private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(length: 10)]
-    private ?string $createdby = null;
+    #[ORM\Column(length: 20, options: ['default' => 'Administrator'])]
+    private ?string $createdBy = null;
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    #[ORM\PrePersist]
+    public function setCreatedAt(): static
     {
-        $this->created_at = $created_at;
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable(); // Set default to current timestamp
+        }
 
         return $this;
     }

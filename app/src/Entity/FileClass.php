@@ -18,6 +18,11 @@ class FileClass
     #[ORM\Column(type: "string", columnDefinition: "ENUM('PRODUCTION', 'CORRECTION', 'TEST', 'FORMATION')")]
     private ?string $type = null;
 
+    public function __construct()
+    {
+        $this->createdAt = $this->createdAt ?? new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;

@@ -4,10 +4,13 @@ namespace App\Entity;
 
 use App\Repository\TreatmentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Traits\UpdateFieldTrait;
 
 #[ORM\Entity(repositoryClass: TreatmentRepository::class)]
 class Treatment
 {
+    use UpdateFieldTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -18,6 +21,11 @@ class Treatment
 
     #[ORM\Column(length: 10)]
     private ?string $workerRegNumber = null;
+
+    public function __construct()
+    {
+        $this->createdAt = $this->createdAt ?? new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {

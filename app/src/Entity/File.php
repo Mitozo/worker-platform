@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\FileRepository;
+use App\Traits\UpdateFieldTrait;
 use Doctrine\ORM\Mapping as ORM;
-use Traits\UpdateFieldTrait;
 
 #[ORM\Entity(repositoryClass: FileRepository::class)]
 class File
@@ -32,6 +32,11 @@ class File
 
     #[ORM\Column]
     private ?int $status = null;
+
+    public function __construct()
+    {
+        $this->createdAt = $this->createdAt ?? new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {

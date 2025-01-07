@@ -17,3 +17,16 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    
+    App\Service\ExcelToJsonImporter:
+        autowire: true
+        autoconfigure: true
+        public: true
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
+    
+    App\Command\ImportExcelCommand:
+        tags:
+            - { name: 'console.command' }
+        arguments:
+            $importer: '@App\Service\ExcelToJsonImporter'
