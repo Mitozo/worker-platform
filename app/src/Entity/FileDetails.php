@@ -3,11 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\FileDetailsRepository;
+use App\Traits\UpdateFieldTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FileDetailsRepository::class)]
 class FileDetails
 {
+    use UpdateFieldTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
