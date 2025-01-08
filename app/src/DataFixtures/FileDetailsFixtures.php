@@ -16,6 +16,9 @@ class FileDetailsFixtures extends Fixture
             $fileDetails->setExtension('xlsx ');
             $fileDetails->setSheetsName(["observable_sheets" => ["Input_Data", "Website", "Trademark", "Products"]]);
             $fileDetails->setUuidKey('ubi');
+            $fileDetails->setCreatedAt();
+            $fileDetails->setCreatedBy('');
+
             $manager->persist($fileDetails);
         }
 
