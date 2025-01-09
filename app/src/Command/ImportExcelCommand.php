@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:import-excel',
@@ -38,19 +39,19 @@ class ImportExcelCommand extends Command
     // Execute the command's logic
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $io = new SymfonyStyle($input, $output);
         // Get the arguments passed to the command
         $file = $input->getArgument('file');
         $table = $input->getArgument('table');
 
-        $output->writeln("Starting import of file: $file");
+        $io->note("Starting import of file: '{$file}'");
 
         try {
             // Call the service method to import the data
-            $this->importer->import($file, $table);
-            $output->writeln("Data imported successfully.");
+            $this->importer->import($file, $table, $io);
         } catch (\Exception $e) {
             // Handle any exception during the import
-            $output->writeln("Error during import: " . $e->getMessage());
+            $io->error("Error during import: " . $e->getMessage());
             return Command::FAILURE;
         }
 
