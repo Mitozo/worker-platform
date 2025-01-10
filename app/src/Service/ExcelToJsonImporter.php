@@ -4,6 +4,7 @@ namespace App\Service;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -68,7 +69,7 @@ class ExcelToJsonImporter
         $io->success('Data import completed successfully!');
     }
 
-    private function readSheetAsIndexedJson($sheet, array $keys, string $indexBy, ProgressBar $sheetConvertionProgress): array
+    private function readSheetAsIndexedJson(Worksheet $sheet, array $keys, string $indexBy, ProgressBar $sheetConvertionProgress): array
     {
         $data = [];
 
