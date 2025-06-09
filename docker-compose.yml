@@ -10,7 +10,7 @@ services:
       dockerfile: ./php/dockerfile
     container_name: app_container
     # command: ["sh", "-c", "tail -f /dev/null"]
-    # restart: unless-stopped
+    restart: unless-stopped
     volumes:
       - ./app:/var/www/html/app
       # - ./php/php.ini-production.template:/usr/local/etc/php/php.ini-production
@@ -23,6 +23,7 @@ services:
   
   nginx-service:
     image: nginx:stable-alpine
+    restart: unless-stopped
     container_name: nginx_container
     # command: ["sh", "-c", "tail -f /dev/null"]
     ports:

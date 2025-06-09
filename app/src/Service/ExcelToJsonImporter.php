@@ -4,6 +4,9 @@ namespace App\Service;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ExcelToJsonImporter implements FileImporterInterface
 {
@@ -14,7 +17,7 @@ class ExcelToJsonImporter implements FileImporterInterface
         $this->entityManager = $entityManager;
     }
 
-    public function import(string $filePath, string $tableName): void
+    public function import(string $filePath, string $tableName, SymfonyStyle $io): void
     {
         $spreadsheet = IOFactory::load($filePath);
         
@@ -25,26 +28,48 @@ class ExcelToJsonImporter implements FileImporterInterface
         $resultQuery = $stmt->executeQuery(['id' => 1])->fetchAllAssociative(); // Bind parameters
         $sheetsName = json_decode($resultQuery[0]['sheets_name'], true);
         $uuidKey = $resultQuery[0]['uuid_key'];
+
+        $io->section('Processing  Excel Sheets');
         
         $sheetObject = [];
-        foreach ($sheetsName['observable_sheets'] as $sheet) {
+        foreach ($sheetsName['observable_sheets'] as $key => $sheet) {
             // Parse sheets
             $currentSheet = $spreadsheet->getSheetByName($sheet);
             if (!$sheet) {
-                throw new \Exception("Sheet '{$sheet}' not found in the file.");
+                $message = "Sheet '{$sheet}' not found in the file.";
+                $io->warning($message);
+                continue;
+                // throw new \Exception($message);
             }
-
+            
+            $highestRow = $currentSheet->getHighestRow();
+            if (0 !== $key) {
+                $io->writeln('');
+            }
+            $io->writeln(" [{$sheet}]");
+            $sheetConvertionProgress = new ProgressBar($io, $highestRow);
+            $sheetConvertionProgress->setFormat('debug');
+            $sheetConvertionProgress->start();
             // Extract headers
             $headerExtraction = $currentSheet->rangeToArray('A1:' . $currentSheet->getHighestColumn() . '1')[0];
 
             // Read sheets into indexed data
-            $sheetObject[$sheet] = $this->readFileContent([$currentSheet, $headerExtraction, $uuidKey], 1);
+            $sheetObject[$sheet] = $this->readSheetAsIndexedJson($currentSheet, $headerExtraction, $uuidKey, $sheetConvertionProgress);
+            $sheetConvertionProgress->finish();
         }
+        $io->newLine(2);
+
+        $io->section('Combining and Inserting Data');
+        $totalRows = count(reset($sheetObject));
+        $progressBar = new ProgressBar($io, $totalRows);
+        $progressBar->start();
         // Combine and insert JSON into the database
-        $this->combineAndInsertData($sheetObject, $tableName);
+        $this->combineAndInsertData($sheetObject, $tableName, $progressBar);
+        $progressBar->finish();
+        $io->success('Data import completed successfully!');
     }
 
-    private function readFileContent(array $options, int $flag): mixed
+    private function readSheetAsIndexedJson(Worksheet $sheet, array $keys, string $indexBy, ProgressBar $sheetConvertionProgress): array
     {
         if ($flag != 1) {
             throw new Exception("Error Processing Request: must be a type of Excel file", 1);
@@ -64,7 +89,7 @@ class ExcelToJsonImporter implements FileImporterInterface
                 // Check if the cell contains a formula
                 if ($cell->isFormula()) {
                     // Get the calculated value instead of the formula string
-                    $value = $cell->getCalculatedValue();
+                    $value = $cell->getFormattedValue();
                 }
 
                 $cellValues[] = $value;
@@ -72,6 +97,7 @@ class ExcelToJsonImporter implements FileImporterInterface
 
             $row = array_combine($keys, $cellValues);
             $data[$row[$indexBy]][] = $row; // Index by UUID
+            $sheetConvertionProgress->advance();
         }
 
         return $data;
@@ -89,7 +115,7 @@ class ExcelToJsonImporter implements FileImporterInterface
     }
 
 
-    private function combineAndInsertData(array $dataIndex, string $tableName): void
+    private function combineAndInsertData(array $dataIndex, string $tableName, ProgressBar $progressBar): void
     {
         // Assuming all sheets are indexed by UUID, get the first sheet as the primary key source
         $primarySheet = reset($dataIndex); // First sheet data
@@ -107,7 +133,8 @@ class ExcelToJsonImporter implements FileImporterInterface
             $jsonData = json_encode($combined, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
             // Insert into the database
-            $this->insertJsonData($tableName, $jsonData, $uuid);
+            $this->insertJsonData($tableName, $uuid, $jsonData);
+            $progressBar->advance();
         }
     }
 }

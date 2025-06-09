@@ -15,7 +15,7 @@ class LoadHeavyFileController extends AbstractController
         return $this->json([
             'message' => 'Welcome to your new controller!',
             'path' => 'src/Controller/LoadHeavyFileController.php',
-            'parameters' => $params->get('enum_types')
+            'parameters' => "ENUM"
         ]);
     }
 }
