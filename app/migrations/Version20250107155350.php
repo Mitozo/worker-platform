@@ -21,7 +21,7 @@ final class Version20250107155350 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE file CHANGE created_at created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT \'(DC2Type:datetime_immutable)\'');
-        $this->addSql('ALTER TABLE file_class CHANGE type type ENUM(\'PRODUCTION\', \'CORRECTION\', \'TEST\', \'FORMATION\')');
+        $this->addSql('ALTER TABLE file_class CHANGE type type ENUM(\'EXTRACTION\', \'ANALYSIS\', \'TEST\', \'DELIVERY\')');
         $this->addSql('ALTER TABLE treatment CHANGE created_at created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT \'(DC2Type:datetime_immutable)\'');
     }
 

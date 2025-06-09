@@ -13,8 +13,8 @@ class File
 
     const IMPORTED = 0;
     const MAPPED = 1;
-    const PRODUCTION = 2;
-    const STATUS_TYPE = [self::IMPORTED, self::MAPPED, self::PRODUCTION];
+    const EXTRACTION = 2;
+    const STATUS_TYPE = [self::IMPORTED, self::MAPPED, self::EXTRACTION];
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

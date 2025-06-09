@@ -21,7 +21,7 @@ final class Version20250107155556 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE file CHANGE created_by created_by VARCHAR(20) DEFAULT \'Administrator\' NOT NULL');
-        $this->addSql('ALTER TABLE file_class CHANGE type type ENUM(\'PRODUCTION\', \'CORRECTION\', \'TEST\', \'FORMATION\')');
+        $this->addSql('ALTER TABLE file_class CHANGE type type ENUM(\'EXTRACTION\', \'ANALYSIS\', \'TEST\', \'DELIVERY\')');
         $this->addSql('ALTER TABLE treatment CHANGE created_by created_by VARCHAR(20) DEFAULT \'Administrator\' NOT NULL');
     }
 

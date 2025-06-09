@@ -5,7 +5,7 @@ namespace App\Service;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Doctrine\ORM\EntityManagerInterface;
 
-class ExcelToJsonImporter
+class ExcelToJsonImporter implements FileImporterInterface
 {
     private EntityManagerInterface $entityManager;
 
@@ -38,14 +38,18 @@ class ExcelToJsonImporter
             $headerExtraction = $currentSheet->rangeToArray('A1:' . $currentSheet->getHighestColumn() . '1')[0];
 
             // Read sheets into indexed data
-            $sheetObject[$sheet] = $this->readSheetAsIndexedJson($currentSheet, $headerExtraction, $uuidKey);
+            $sheetObject[$sheet] = $this->readFileContent([$currentSheet, $headerExtraction, $uuidKey], 1);
         }
         // Combine and insert JSON into the database
         $this->combineAndInsertData($sheetObject, $tableName);
     }
 
-    private function readSheetAsIndexedJson($sheet, array $keys, string $indexBy): array
+    private function readFileContent(array $options, int $flag): mixed
     {
+        if ($flag != 1) {
+            throw new Exception("Error Processing Request: must be a type of Excel file", 1);
+        }
+        [$sheet, $keys, $indexBy] = $options;
         $data = [];
 
         foreach ($sheet->getRowIterator() as $index => $row) {
@@ -73,7 +77,7 @@ class ExcelToJsonImporter
         return $data;
     }
 
-    private function insertJsonData(string $tableName, string $uuid, string $jsonData): void
+    private function insertJsonData(string $tableName, string $jsonData, ?string $uuid): void
     {
         $connection = $this->entityManager->getConnection();
 
@@ -103,7 +107,7 @@ class ExcelToJsonImporter
             $jsonData = json_encode($combined, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
             // Insert into the database
-            $this->insertJsonData($tableName, $uuid, $jsonData);
+            $this->insertJsonData($tableName, $jsonData, $uuid);
         }
     }
 }

@@ -20,7 +20,7 @@ final class Version20250107154441 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE file_class CHANGE type type ENUM(\'PRODUCTION\', \'CORRECTION\', \'TEST\', \'FORMATION\')');
+        $this->addSql('ALTER TABLE file_class CHANGE type type ENUM(\'EXTRACTION\', \'ANALYSIS\', \'TEST\', \'DELIVERY\')');
         $this->addSql('ALTER TABLE file_data ADD uuid CHAR(36) NOT NULL COMMENT \'(DC2Type:guid)\'');
     }
 

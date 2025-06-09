@@ -14,8 +14,8 @@ class FileDetailsFixtures extends Fixture
         for ($i = 0; $i < 2; $i++) {
             $fileDetails = new FileDetails();
             $fileDetails->setExtension('xlsx ');
-            $fileDetails->setSheetsName(["observable_sheets" => ["Input_Data", "Website", "Trademark", "Products"]]);
-            $fileDetails->setUuidKey('ubi');
+            $fileDetails->setSheetsName(["observable_sheets" => ["Guideline", "Customers", "Products", "Summary"]]);
+            $fileDetails->setUuidKey('work_unit_uuid');
             $manager->persist($fileDetails);
         }
 
